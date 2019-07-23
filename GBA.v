@@ -1,12 +1,23 @@
-`default_nettype none
+`timescale 1ns / 1ps
 
 module top(
-  input wire clk100,
-  input wire GBACART_CS,
-  input wire GBACART_RD,
-  //input wire [7:0]  GBACART_AH,
+  input wire clk16,
+
+  // onboard USB interface
+  output pin_pu,
+  output pin_usbp,
+  output pin_usbn,
+
+	input GBACART_WR,
+  input GBACART_CS,
+  input GBACART_RD,
+	input GBACART_CS2,
   inout wire [15:0] GBACART_AD
 );
+
+assign pin_pu = 1'b1;
+assign pin_usbp = 1'b0;
+assign pin_usbn = 1'b0;
 
 reg  [15:0] gba_data_out;
 wire [15:0] gba_addr_lo_in;
@@ -14,16 +25,15 @@ reg  [15:0] gba_addr_lo;
 //wire [23:0] gba_addr;
 //assign gba_addr = {GBACART_AH, gba_addr_lo};
 
-reg [15:0] rom [0:511];
+reg [15:0] rom [0:441];
 initial $readmemh("fire.hex", rom);
 
 reg risingRD, fallingRD, fallingCS;
 reg [1:3] resyncRD;
 reg [1:3] resyncCS;
 
-always @(posedge clk)
-begin
-  if (fallingRD && (gba_addr_lo < 16'd511)) gba_data_out = rom[gba_addr_lo[8:0]];
+always @(posedge clk) begin
+  if (fallingRD && (gba_addr_lo < 16'd442)) gba_data_out = rom[gba_addr_lo[9:0]];
   if (risingRD) gba_addr_lo <= gba_addr_lo + 1'b1;
   else if (fallingCS) gba_addr_lo <= gba_addr_lo_in;
 
@@ -50,18 +60,20 @@ SB_IO #(
 );
 
 wire clk;
+wire clk_locked;
 
-SB_PLL40_PAD #(
-    .FEEDBACK_PATH ("SIMPLE"),
-    .DIVR (4'b0111),
-    .DIVF (7'b0101010),
-    .DIVQ (3'b011),
-    .FILTER_RANGE (3'b001)
+SB_PLL40_CORE #(
+    .FEEDBACK_PATH("SIMPLE"),
+    .DIVR(4'b0000),		// DIVR =  0
+    .DIVF(7'b0101011),	// DIVF = 43
+    .DIVQ(3'b010),		// DIVQ =  2
+    .FILTER_RANGE(3'b001)	// FILTER_RANGE = 1
 ) uut (
-    .RESETB         (1'b1),
-    .BYPASS         (1'b0),
-    .PACKAGEPIN     (clk100),
-    .PLLOUTGLOBAL   (clk) // 67.120 MHz (requested) 67.188 MHz (achieved)
+    .LOCK(clk_locked),
+    .RESETB(1'b1),
+    .BYPASS(1'b0),
+    .REFERENCECLK(clk16),
+    .PLLOUTCORE(clk)
 );
 
 endmodule

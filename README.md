@@ -1,8 +1,6 @@
 # GBA
 Experimental FPGA implementation of a GBA cart!
 
-![](fire.jpg?raw=true)
+Running on TinyFPGA BX
 
-MyStorm BlackIce II board acting as a GBA cart, running fire demo from:
-
-http://jiggawatt.org/badc0de/fire0312.zip
+This design is very brittle for some reason and breaks when changing almost anything in the HDL or Pin mapping.
