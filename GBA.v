@@ -25,7 +25,7 @@ reg  [15:0] gba_addr_lo;
 //wire [23:0] gba_addr;
 //assign gba_addr = {GBACART_AH, gba_addr_lo};
 
-reg [15:0] rom [0:441];
+reg [15:0] rom [0:511];
 initial $readmemh("fire.hex", rom);
 
 reg risingRD, fallingRD, fallingCS;
@@ -33,7 +33,7 @@ reg [1:3] resyncRD;
 reg [1:3] resyncCS;
 
 always @(posedge clk) begin
-  if (fallingRD && (gba_addr_lo < 16'd442)) gba_data_out = rom[gba_addr_lo[9:0]];
+  if (fallingRD && (gba_addr_lo < 16'd442)) gba_data_out = rom[gba_addr_lo[11:0]];
   if (risingRD) gba_addr_lo <= gba_addr_lo + 1'b1;
   else if (fallingCS) gba_addr_lo <= gba_addr_lo_in;
 
@@ -65,8 +65,8 @@ wire clk_locked;
 SB_PLL40_CORE #(
     .FEEDBACK_PATH("SIMPLE"),
     .DIVR(4'b0000),		// DIVR =  0
-    .DIVF(7'b0101011),	// DIVF = 43
-    .DIVQ(3'b010),		// DIVQ =  2
+    .DIVF(7'b1000001),	// DIVF = 65
+    .DIVQ(3'b100),		// DIVQ =  4
     .FILTER_RANGE(3'b001)	// FILTER_RANGE = 1
 ) uut (
     .LOCK(clk_locked),

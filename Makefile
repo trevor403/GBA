@@ -9,7 +9,7 @@ GBA.asc: GBA.pcf GBA.blif
 	arachne-pnr -d 8k -P cm81 -o GBA.asc -p GBA.pcf GBA.blif
 
 GBA.bin: GBA.asc
-	icetime -d lp8k -c 12 -mtr GBA.rpt GBA.asc
+	icetime -d lp8k -c 16 -mtr GBA.rpt GBA.asc
 	icepack GBA.asc GBA.bin
 
 clean:
