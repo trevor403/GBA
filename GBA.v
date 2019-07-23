@@ -8,10 +8,10 @@ module top(
   output pin_usbp,
   output pin_usbn,
 
-	input GBACART_WR,
+  input GBACART_WR,
   input GBACART_CS,
   input GBACART_RD,
-	input GBACART_CS2,
+  input GBACART_CS2,
   inout wire [15:0] GBACART_AD
 );
 
