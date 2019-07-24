@@ -15,6 +15,9 @@ module top(
   inout wire [15:0] GBACART_AD
 );
 
+localparam ROMDEPTH = 512;
+localparam ROMWIDTH = $clog2(ROMDEPTH);
+
 assign pin_pu = 1'b1;
 assign pin_usbp = 1'b0;
 assign pin_usbn = 1'b0;
@@ -25,7 +28,7 @@ reg  [15:0] gba_addr_lo;
 //wire [23:0] gba_addr;
 //assign gba_addr = {GBACART_AH, gba_addr_lo};
 
-reg [15:0] rom [0:511];
+reg [15:0] rom [0:ROMDEPTH-1];
 initial $readmemh("fire.hex", rom);
 
 reg risingRD, fallingRD, fallingCS;
@@ -33,7 +36,7 @@ reg [1:3] resyncRD;
 reg [1:3] resyncCS;
 
 always @(posedge clk) begin
-  if (fallingRD && (gba_addr_lo < 16'd442)) gba_data_out = rom[gba_addr_lo[11:0]];
+  if (fallingRD && (!gba_addr_lo[ROMWIDTH])) gba_data_out = rom[gba_addr_lo[ROMWIDTH-1:0]];
   if (risingRD) gba_addr_lo <= gba_addr_lo + 1'b1;
   else if (fallingCS) gba_addr_lo <= gba_addr_lo_in;
 
