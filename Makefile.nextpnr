@@ -1,0 +1,17 @@
+# Dockerfile for icetools found at https://github.com/azevem/fpga_matrix/blob/master/icetools/Dockerfile
+
+upload: GBA.bin
+	tinyprog -p GBA.bin
+
+GBA.json: GBA.v
+	docker run --rm -it -v ${PWD}:/wk -w /wk icetools yosys -ql GBA.log -p 'synth_ice40 -top top -json GBA.json' $^
+
+GBA.asc: GBA.pcf GBA.json
+	docker run --rm -it -v ${PWD}:/wk -w /wk icetools nextpnr-ice40 --lp8k --package cm81 --json GBA.json --asc GBA.asc --pcf GBA.pcf --pcf-allow-unconstrained
+
+GBA.bin: GBA.asc
+	icetime -d lp8k -c 16 -mtr GBA.rpt GBA.asc
+	icepack GBA.asc GBA.bin
+
+clean:
+	rm -f GBA.json GBA.log GBA.asc GBA.rpt GBA.bin

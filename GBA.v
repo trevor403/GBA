@@ -3,24 +3,18 @@
 module top(
   input wire clk16,
 
-  // onboard USB interface
   output pin_pu,
-  output pin_usbp,
-  output pin_usbn,
+  output led,
 
-  input GBACART_WR,
   input GBACART_CS,
   input GBACART_RD,
-  input GBACART_CS2,
   inout wire [15:0] GBACART_AD
 );
 
-localparam ROMDEPTH = 512;
+localparam ROMDEPTH = 4096;
 localparam ROMWIDTH = $clog2(ROMDEPTH);
 
-assign pin_pu = 1'b1;
-assign pin_usbp = 1'b0;
-assign pin_usbn = 1'b0;
+assign pin_pu = 1'b0;
 
 reg  [15:0] gba_data_out;
 wire [15:0] gba_addr_lo_in;
@@ -63,7 +57,6 @@ SB_IO #(
 );
 
 wire clk;
-wire clk_locked;
 
 SB_PLL40_CORE #(
     .FEEDBACK_PATH("SIMPLE"),
@@ -72,7 +65,6 @@ SB_PLL40_CORE #(
     .DIVQ(3'b100),		// DIVQ =  4
     .FILTER_RANGE(3'b001)	// FILTER_RANGE = 1
 ) uut (
-    .LOCK(clk_locked),
     .RESETB(1'b1),
     .BYPASS(1'b0),
     .REFERENCECLK(clk16),

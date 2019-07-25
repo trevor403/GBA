@@ -17,14 +17,5 @@ set_io GBACART_AD[13]               B8
 set_io GBACART_AD[14]               A8
 set_io GBACART_AD[15]               B7
 set_io pin_pu                       A3
-set_io pin_usbp                     B4
-set_io pin_usbn                     A4
 set_io clk16                        B2 # Onboard 16MHz oscillator
-
-set_io --warn-no-port xxxx          H1   # pin_11
-set_io --warn-no-port xxxx          J1   # pin_12
-set_io --warn-no-port xxxx          H2   # pin_13
-set_io --warn-no-port xxxx          A7   # pin_22
-set_io --warn-no-port xxxx          B6   # pin_23
-set_io --warn-no-port xxxx          A6   # pin_24
-set_io --warn-no-port led           B3 # LED
+set_io led                          B3 # LED
